@@ -70,7 +70,6 @@ export class PaperAssistantComponent implements OnInit, OnDestroy {
   faVolumeOff = faVolumeOff;
 
   // ── Config ──────────────────────────────────────────────
-  // Replace with your actual Groq API key (or load from environment)
   private readonly GROQ_API_KEY = '*****************************************************';
   private readonly GROQ_MODEL = 'llama-3.3-70b-versatile';
   private readonly GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
