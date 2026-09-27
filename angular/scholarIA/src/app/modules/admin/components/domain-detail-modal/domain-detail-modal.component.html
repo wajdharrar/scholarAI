@@ -1,0 +1,67 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm overflow-y-auto py-8"
+     (click)="close()">
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4"
+       (click)="$event.stopPropagation()">
+
+    <!-- Top bar -->
+    <div class="h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-t-2xl"></div>
+
+    <div class="px-6 pb-6">
+
+      <!-- Logo & close -->
+      <div class="flex items-end justify-between -mt-10 mb-4">
+        <div class="w-20 h-20 rounded-2xl border-4 border-white overflow-hidden bg-white shadow-md shrink-0">
+          <img *ngIf="domain?.logo" [src]="domain.logo" class="w-full h-full object-cover"
+               onerror="this.style.display='none'" alt="logo" />
+          <div *ngIf="!domain?.logo"
+               class="w-full h-full flex items-center justify-center bg-blue-50">
+            <fa-icon [icon]="faGlobe" class="text-blue-400 text-2xl"></fa-icon>
+          </div>
+        </div>
+        <button type="button" (click)="close()" class="text-gray-400 hover:text-gray-600 mb-1">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Name -->
+      <h2 class="text-xl font-semibold text-gray-900 mb-1">{{ domain?.name }}</h2>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-1 gap-3 my-4">
+        <div class="bg-blue-50 rounded-xl p-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <fa-icon [icon]="faFileAlt" class="text-blue-500"></fa-icon>
+            <span class="text-sm text-blue-700">Research Papers</span>
+          </div>
+          <span class="text-lg font-bold text-blue-700">{{ domain?.papersCount ?? 0 }}</span>
+        </div>
+      </div>
+
+      <!-- Logo URL -->
+      <div class="mb-4">
+        <p class="text-xs text-gray-500 mb-1">Logo URL</p>
+        <a *ngIf="domain?.logo" [href]="domain.logo" target="_blank"
+           class="text-sm text-blue-600 hover:underline break-all">{{ domain?.logo }}</a>
+        <p *ngIf="!domain?.logo" class="text-sm text-gray-400">—</p>
+      </div>
+
+      <!-- Paper titles -->
+      <div *ngIf="domain?.researchPaperTitles?.length > 0" class="mb-4">
+        <p class="text-xs text-gray-500 mb-2">Papers in this domain</p>
+        <div class="space-y-1 max-h-40 overflow-y-auto">
+          <div *ngFor="let title of domain.researchPaperTitles"
+               class="text-sm text-gray-700 px-3 py-1.5 bg-gray-50 rounded-lg truncate">
+            {{ title }}
+          </div>
+        </div>
+      </div>
+
+      <button type="button" (click)="close()"
+              class="w-full py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+        Close
+      </button>
+    </div>
+  </div>
+</div>

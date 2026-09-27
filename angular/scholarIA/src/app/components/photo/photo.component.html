@@ -1,0 +1,99 @@
+<div *ngIf="hasSignupData; else loading" class="signup-container">
+  <div class="card-container">
+    <!-- Progress Indicator -->
+    <div class="progress-section">
+      <div class="progress-header">
+        <span class="step-label">Step 2 of 3</span>
+        <span class="step-name">Profile photo</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" style="width: 66.666%"></div>
+      </div>
+      <div class="step-circles">
+        <div class="step-circle completed">✓</div>
+        <div class="step-circle active">2</div>
+        <div class="step-circle">3</div>
+      </div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="main-card">
+      <!-- Photo Upload Area -->
+      <div
+        class="upload-area"
+        (dragover)="onDragOver($event)"
+        (drop)="onDrop($event)"
+      >
+        <div *ngIf="!imageUrl" class="upload-placeholder" (click)="triggerFileInput()">
+          <div class="camera-icon">
+            <fa-icon [icon]="faCamera" size="2x"></fa-icon>
+          </div>
+          <p class="upload-text">
+            <span class="click-link">Click to upload</span> or drag and drop
+          </p>
+          <p class="upload-hint">PNG, JPG or GIF (max. 5MB)</p>
+          <input
+            #fileInput
+            type="file"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+            class="hidden-input"
+          />
+        </div>
+
+        <div *ngIf="imageUrl" class="preview-container">
+          <div class="preview-image-wrapper">
+            <img [src]="imageUrl" alt="Profile preview" class="preview-image" />
+          </div>
+          <div class="action-buttons">
+            <button class="btn-change" (click)="triggerFileInput()">Change</button>
+            <button class="btn-remove" (click)="removeImage()">
+              <fa-icon [icon]="faTrash"></fa-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div class="tips-card">
+        <h3 class="tips-title">Photo tips:</h3>
+        <ul class="tips-list">
+          <li>• Use a clear, well-lit photo of your face</li>
+          <li>• Professional headshots work best</li>
+          <li>• Avoid group photos or logos</li>
+        </ul>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="nav-buttons">
+        <button class="btn-back" (click)="goBack()" [disabled]="isLoading">
+          <fa-icon [icon]="faArrowLeft"></fa-icon>
+          Back
+        </button>
+
+        <button
+          *ngIf="imageUrl"
+          class="btn-continue"
+          (click)="continue()"
+          [disabled]="isLoading"
+        >
+          {{ isLoading ? 'Saving...' : 'Continue' }}
+          <fa-icon [icon]="faArrowRight" class="arrow-icon"></fa-icon>
+        </button>
+
+        <button
+          *ngIf="!imageUrl"
+          class="btn-skip"
+          (click)="skip()"
+          [disabled]="isLoading"
+        >
+          Skip for now
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="loading-screen">Loading...</div>
+</ng-template>

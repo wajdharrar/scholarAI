@@ -1,0 +1,129 @@
+<div class="h-screen bg-gray-50 p-6 w-full">
+
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-light text-gray-900 mb-2">Research Domains</h1>
+    <p class="text-gray-500">Manage research domains and their associated papers</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+      <p class="text-sm text-gray-500 mb-1">Total Domains</p>
+      <p class="text-2xl font-bold text-gray-900">{{ domains.length }}</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+      <p class="text-sm text-gray-500 mb-1">Filtered</p>
+      <p class="text-2xl font-bold text-cyan-600">{{ filteredDomains.length }}</p>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-6">
+    <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <div class="relative flex-1 w-full max-w-md">
+        <fa-icon [icon]="faSearch" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+        <input type="text" placeholder="Search domains..." [(ngModel)]="searchTerm"
+               class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:bg-white transition-all" />
+      </div>
+      <div class="flex gap-2">
+        <button (click)="loadDomains()"
+                class="px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-gray-50 transition-all">
+          <fa-icon [icon]="faRefresh"></fa-icon>
+        </button>
+        <button (click)="showAddModal = true"
+                class="px-4 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl text-sm font-medium hover:shadow-lg transition-all flex items-center gap-2">
+          <fa-icon [icon]="faPlus"></fa-icon>
+          Add Domain
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="flex items-center justify-center py-16">
+      <div class="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!isLoading && filteredDomains.length === 0"
+         class="flex flex-col items-center justify-center py-16 text-gray-400">
+      <fa-icon [icon]="faGlobe" class="text-5xl mb-3 opacity-30"></fa-icon>
+      <p class="text-sm">No domains found</p>
+    </div>
+
+    <div *ngIf="!isLoading && filteredDomains.length > 0" class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Domain</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logo URL</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Papers</th>
+            <th class="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr *ngFor="let domain of filteredDomains" class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center overflow-hidden shrink-0">
+                  <img *ngIf="domain.logo" [src]="domain.logo" class="w-full h-full object-cover"
+                       onerror="this.style.display='none'" alt="logo" />
+                  <fa-icon *ngIf="!domain.logo" [icon]="faGlobe" class="text-blue-400"></fa-icon>
+                </div>
+                <span class="font-medium text-gray-900">{{ domain.name }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <a *ngIf="domain.logo" [href]="domain.logo" target="_blank"
+                 class="text-sm text-blue-600 hover:underline truncate block max-w-xs">
+                {{ domain.logo }}
+              </a>
+              <span *ngIf="!domain.logo" class="text-sm text-gray-400">—</span>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center justify-end gap-2">
+                <button (click)="viewDomain(domain.id)"
+                        class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-blue-600 transition-colors">
+                  <fa-icon [icon]="faEye" class="w-4 h-4"></fa-icon>
+                </button>
+                <button (click)="editDomain(domain.id)"
+                        class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-green-600 transition-colors">
+                  <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
+                </button>
+                <button (click)="deleteDomain(domain.id)"
+                        class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-red-600 transition-colors">
+                  <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <app-add-domain-modal
+    *ngIf="showAddModal"
+    (closed)="showAddModal = false"
+    (created)="onDomainCreated()"
+  />
+
+  <app-edit-domain-modal
+    *ngIf="showEditModal"
+    [domain]="selectedDomain"
+    (closed)="showEditModal = false"
+    (updated)="onDomainUpdated()"
+  />
+
+  <app-domain-detail-modal
+    *ngIf="showDetailModal"
+    [domain]="selectedDomain"
+    (closed)="showDetailModal = false"
+  />
+
+</div>

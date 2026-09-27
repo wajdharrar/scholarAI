@@ -1,0 +1,116 @@
+<div class="min-h-screen py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Upcoming Events</h1>
+      <p class="text-gray-500 mt-1">Discover and join research events worldwide</p>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+      <div class="flex flex-col sm:flex-row gap-4">
+        <div class="relative flex-1">
+          <fa-icon [icon]="faSearch" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+          <input
+            type="text"
+            placeholder="Search by title or description..."
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+          />
+        </div>
+        <div class="sm:w-64">
+          <select
+            [(ngModel)]="selectedEventType"
+            (ngModelChange)="onEventTypeChange()"
+            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+          >
+            <option value="all">All Event Types</option>
+            <option *ngFor="let type of eventTypes" [value]="type">{{ type | titlecase }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+      <div class="animate-pulse text-gray-500">Loading events...</div>
+    </div>
+
+    <!-- Events Grid -->
+    <div *ngIf="!isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <!-- Event Card -->
+      <div *ngFor="let event of filteredEvents" 
+           class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer"
+           (click)="viewEvent(event.id)">
+        
+        <!-- Gradient Accent -->
+        <div class="h-2 bg-gradient-to-r from-cyan-500 to-blue-500"></div>
+        
+        <!-- Event Image (if exists) -->
+        <div *ngIf="event.imageUrl" class="h-40 overflow-hidden">
+          <img [src]="event.imageUrl" [alt]="event.title" class="w-full h-full object-cover transition-transform hover:scale-105 duration-300" />
+        </div>
+        
+        <div class="p-5">
+          <!-- Title & Type Badge -->
+          <div class="flex justify-between items-start gap-2 mb-2">
+            <h2 class="text-lg font-semibold text-gray-900 hover:text-cyan-600 transition-colors line-clamp-2">
+              {{ event.title }}
+            </h2>
+            <span class="text-xs text-white bg-cyan-500 px-2 py-0.5 rounded-full whitespace-nowrap">
+              {{ event.eventType | titlecase }}
+            </span>
+          </div>
+          
+          <!-- Description preview -->
+          <p class="text-gray-600 text-sm mb-3 line-clamp-3">{{ event.description }}</p>
+          
+          <!-- Format & Location/Video -->
+          <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
+            <fa-icon [icon]="getFormatIcon(event.eventFormat)" class="w-3 h-3"></fa-icon>
+            <span>{{ event.eventFormat | titlecase }}</span>
+            <span *ngIf="event.eventFormat !== 'VIRTUAL' && event.location">• {{ event.location }}</span>
+            <span *ngIf="event.eventFormat === 'VIRTUAL' && event.virtualLink">• Virtual</span>
+          </div>
+          
+          <!-- Date & Time -->
+          <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
+            <fa-icon [icon]="faCalendarAlt" class="w-3 h-3"></fa-icon>
+            <span>{{ formatDateRange(event) }}</span>
+            <fa-icon [icon]="faClock" class="w-3 h-3 ml-1"></fa-icon>
+            <span>{{ event.startDateTime | date:'shortTime' }}</span>
+          </div>
+          
+          <!-- Metrics Row -->
+          <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+            <div class="flex gap-3">
+              <div class="flex items-center gap-1 text-xs text-gray-500">
+                <fa-icon [icon]="faMicrophone" class="w-3 h-3"></fa-icon>
+                <span>{{ event.speakerCount }} speaker{{ event.speakerCount !== 1 ? 's' : '' }}</span>
+              </div>
+              <div class="flex items-center gap-1 text-xs text-gray-500">
+                <fa-icon [icon]="faUsers" class="w-3 h-3"></fa-icon>
+                <span>{{ getAttendeeCount(event) }} attending</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-1 text-sm font-semibold">
+              <fa-icon [icon]="faDollarSign" class="w-3 h-3 text-gray-500"></fa-icon>
+              <span [class.text-green-600]="isFree(event.price)" [class.text-gray-900]="!isFree(event.price)">
+                {{ isFree(event.price) ? 'Free' : (event.price + ' ' + event.currency) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="filteredEvents.length === 0" class="col-span-full text-center py-12">
+        <fa-icon [icon]="faCalendarAlt" class="text-gray-300 w-16 h-16 mx-auto mb-4"></fa-icon>
+        <p class="text-gray-500">No events found. Try adjusting your search or filters.</p>
+      </div>
+    </div>
+  </div>
+</div>

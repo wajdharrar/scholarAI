@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  ml-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ml-recommendation-service
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-research_paper_db}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - JAVA_BACKEND_URL=http://java-backend:8080
+      - MODEL_PATH=/app/models
+    volumes:
+      - ./models:/app/models
+      - ./logs:/app/logs
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - ml-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ml-postgres
+    environment:
+      - POSTGRES_DB=${DB_NAME:-research_paper_db}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - ml-network
+    restart: unless-stopped
+
+networks:
+  ml-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

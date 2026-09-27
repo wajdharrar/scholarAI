@@ -1,0 +1,141 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+  <div class="max-w-5xl w-full">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+      <div class="flex flex-col md:flex-row">
+        <!-- Left Side - Form -->
+        <div class="flex-1 p-8 md:p-12">
+          <!-- Header -->
+          <div class="text-center mb-8">
+            <h1 class="text-4xl font-light text-gray-900 mb-2">Welcome Back</h1>
+            <p class="text-gray-500">Sign in to continue your research journey</p>
+          </div>
+
+          <!-- Social Login -->
+          <div class="space-y-3 mb-6">
+            <button type="button" class="w-full relative flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all group">
+              <fa-icon [icon]="faGoogle" class="w-5 h-5 text-gray-600 group-hover:text-gray-900"></fa-icon>
+              <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900">Continue with Google</span>
+            </button>
+            <button type="button" class="w-full relative flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all group">
+              <fa-icon [icon]="faGithub" class="w-5 h-5 text-gray-600 group-hover:text-gray-900"></fa-icon>
+              <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900">Continue with GitHub</span>
+            </button>
+          </div>
+
+          <!-- Submit error (global) -->
+          <div *ngIf="signInForm.errors?.['submit']" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
+            <fa-icon [icon]="faExclamationCircle" class="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0"></fa-icon>
+            <div>
+              <h3 class="font-medium text-red-900 text-sm">Sign in failed</h3>
+              <p class="text-red-700 text-sm mt-0.5">{{ signInForm.errors?.['submit'] }}</p>
+            </div>
+          </div>
+
+          <div class="relative mb-6">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-200"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-4 bg-white text-gray-500">or sign in with email</span>
+            </div>
+          </div>
+
+          <!-- Form -->
+          <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="space-y-4">
+            <!-- Email -->
+            <div class="relative">
+              <div class="absolute left-3 top-1/2 -translate-y-1/2 transition-colors duration-200" [class.text-blue-500]="focusedField === 'email'" [class.text-gray-400]="focusedField !== 'email'">
+                <fa-icon [icon]="faEnvelope" class="w-4 h-4"></fa-icon>
+              </div>
+              <input
+                type="email"
+                formControlName="email"
+                (focus)="onFocus('email')"
+                (blur)="onBlur()"
+                placeholder="Email address"
+                class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+              />
+            </div>
+
+            <!-- Password -->
+            <div class="relative">
+              <div class="absolute left-3 top-1/2 -translate-y-1/2 transition-colors duration-200" [class.text-blue-500]="focusedField === 'password'" [class.text-gray-400]="focusedField !== 'password'">
+                <fa-icon [icon]="faLock" class="w-4 h-4"></fa-icon>
+              </div>
+              <input
+                type="password"
+                formControlName="password"
+                (focus)="onFocus('password')"
+                (blur)="onBlur()"
+                placeholder="Password"
+                class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+              />
+            </div>
+
+            <!-- Forgot Password -->
+            <div class="text-right">
+              <a routerLink="/forgot-password" class="text-xs text-blue-600 hover:underline">Forgot password?</a>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              [disabled]="!isValid || isLoading"
+              class="w-full mt-6 py-3 rounded-xl font-medium text-sm transition-all flex items-center justify-center gap-2 group"
+              [class.bg-blue-600]="isValid && !isLoading"
+              [class.hover:bg-blue-700]="isValid && !isLoading"
+              [class.text-white]="isValid && !isLoading"
+              [class.shadow-lg]="isValid && !isLoading"
+              [class.hover:shadow-xl]="isValid && !isLoading"
+              [class.bg-gray-100]="!isValid || isLoading"
+              [class.text-gray-400]="!isValid || isLoading"
+              [class.cursor-not-allowed]="!isValid || isLoading"
+            >
+              <span>{{ isLoading ? 'Signing in...' : 'Sign In' }}</span>
+              <fa-icon *ngIf="!isLoading" [icon]="faArrowRight" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"></fa-icon>
+            </button>
+          </form>
+
+          <!-- Sign Up Link -->
+          <p class="text-center mt-6 text-sm text-gray-500">
+            Don't have an account?
+            <a routerLink="/sign-up" class="text-blue-600 hover:underline font-medium">Sign up</a>
+          </p>
+        </div>
+
+        <!-- Right Side - Illustration -->
+        <div class="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-600 to-cyan-600 p-12 flex-col items-center justify-center text-white">
+          <div class="relative w-80 h-80 mb-8">
+            <img src="../../../assets/website-visitors.png" alt="Sign in illustration" class="object-contain drop-shadow-2xl w-full h-full" />
+          </div>
+          <h2 class="text-3xl font-light text-center mb-4">Research Smarter</h2>
+          <p class="text-center text-white/80 max-w-sm">
+            Access millions of research papers, get AI-powered recommendations, and collaborate with researchers worldwide.
+          </p>
+
+          <!-- Feature List -->
+          <div class="mt-8 space-y-3 w-full max-w-sm">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                <span class="text-white text-sm">✓</span>
+              </div>
+              <span class="text-sm text-white/90">Personalized research feed</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                <span class="text-white text-sm">✓</span>
+              </div>
+              <span class="text-sm text-white/90">AI-powered paper summaries</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                <span class="text-white text-sm">✓</span>
+              </div>
+              <span class="text-sm text-white/90">Connect with 10,000+ researchers</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

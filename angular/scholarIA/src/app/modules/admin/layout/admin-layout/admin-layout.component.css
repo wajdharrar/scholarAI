@@ -1,0 +1,11 @@
+/* In your main layout component's .css/.scss file */
+.content-wrapper {
+  min-height: 100vh;
+  height: 100%;
+}
+
+/* Or if you want the wrapper to take full height */
+.content-wrapper {
+  height: 100%;
+  min-height: 100vh;
+}

@@ -1,0 +1,297 @@
+<div class="min-h-screen">
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <div class="flex flex-col lg:flex-row gap-6">
+      
+      <!-- LEFT SIDEBAR - Profile Section -->
+      <div class="w-full lg:w-64 shrink-0">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden sticky top-20">
+          <!-- Cover Image -->
+          <div class="h-16 bg-gradient-to-r from-cyan-500 to-blue-500"></div>
+          
+          <!-- Profile Info -->
+          <div class="px-4 pb-4">
+            <div class="flex justify-center -mt-10 mb-3">
+              <div class="relative h-20 w-20 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 p-1">
+                <div class="h-full w-full rounded-full bg-white flex items-center justify-center overflow-hidden">
+                  <img
+                    *ngIf="userData.imageUrl"
+                    [src]="userData.imageUrl"
+                    [alt]="userData.firstName"
+                    class="w-full h-full object-cover"
+                  />
+                  <fa-icon
+                    *ngIf="!userData.imageUrl"
+                    [icon]="faUser"
+                    class="absolute top-7 left-8 text-cyan-600"
+                  ></fa-icon>
+                </div>
+              </div>
+            </div>
+            
+            <div class="text-center mb-4">
+              <h2 class="font-bold text-gray-900 hover:text-cyan-600 cursor-pointer">
+                {{ userData.firstName }}
+              </h2>
+              <p class="text-sm text-gray-600">{{ userData.lastName }}</p>
+              <p class="text-xs text-cyan-600 mt-1">{{ userData.institution }}</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="border-t border-gray-100 pt-3 space-y-2">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Papers Published</span>
+                <span class="font-semibold text-gray-900">{{ userData.papersCount | number }}</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Citation</span>
+                <span class="font-semibold text-gray-900">{{ userData.citationCount | number }}</span>
+              </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="border-t border-gray-100 mt-3 pt-3">
+              <a routerLink="/user/profile" class="flex items-center gap-2 text-sm text-gray-700 hover:text-cyan-600 py-2 transition-colors">
+                <fa-icon [icon]="faUser" class="w-4 h-4"></fa-icon>
+                <span>View Profile</span>
+              </a>
+              <a routerLink="/user/papers" class="flex items-center gap-2 text-sm text-gray-700 hover:text-cyan-600 py-2 transition-colors">
+                <fa-icon [icon]="faBookOpen" class="w-4 h-4"></fa-icon>
+                <span>My Papers</span>
+              </a>
+              <a routerLink="/user/courses" class="flex items-center gap-2 text-sm text-gray-700 hover:text-cyan-600 py-2 transition-colors">
+                <fa-icon [icon]="faNewspaper" class="w-4 h-4"></fa-icon>
+                <span>My Collections</span>
+              </a>
+              <a routerLink="/user/events" class="flex items-center gap-2 text-sm text-gray-700 hover:text-cyan-600 py-2 transition-colors">
+                <fa-icon [icon]="faCalendarAlt" class="w-4 h-4"></fa-icon>
+                <span>My Events</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MIDDLE COLUMN - Feed -->
+      <div class="flex-1 max-w-2xl">
+        <!-- Create Post Box -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4 mt-6">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="h-10 w-10 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center shrink-0">
+              <fa-icon [icon]="faUser" class=" absolute text-white "></fa-icon>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-gray-900">{{ userData.firstName }}</p>
+              <p class="text-xs text-gray-500">Share your news with the community</p>
+            </div>
+          </div>
+          <div class="flex justify-between gap-3">
+            <a routerLink="/user/papers/publish"
+               class="flex-1 px-5 py-2 rounded-full font-medium text-sm text-center transition-all bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:shadow-md">
+              Post Research
+            </a>
+            <a routerLink="/user/events/create"
+               class="flex-1 px-5 py-2 rounded-full font-medium text-sm text-center transition-all bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:shadow-md">
+              Create Event
+            </a>
+          </div>
+        </div>
+
+        <!-- Feed Posts (Placeholder) -->
+        <div class="space-y-4">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+            <p *ngIf="!filteredPapers.length" class="text-gray-500">No posts yet. Start sharing your research!</p>
+          <div *ngIf="filteredPapers.length">
+            <div *ngFor="let paper of filteredPapers" 
+           class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer"
+           (click)="viewPaper(paper.id)">
+        
+              <!-- Gradient Accent -->
+              <div class="h-2 bg-gradient-to-r from-cyan-500 to-blue-500"></div>
+              
+              <!-- Thumbnail (if exists) -->
+              <div *ngIf="paper.thumbnailUrl" class="h-40 overflow-hidden">
+                <img [src]="paper.thumbnailUrl" [alt]="paper.title" class="w-full h-full object-cover transition-transform hover:scale-105 duration-300" />
+              </div>
+              
+              <div class="p-5">
+                <!-- Title & Category -->
+                <div class="flex justify-between items-start gap-2 mb-2">
+                  <h2 class="text-lg font-semibold text-gray-900 hover:text-cyan-600 transition-colors line-clamp-2">
+                    {{ paper.title }}
+                  </h2>
+                  <span class="text-xs text-white bg-cyan-500 px-2 py-0.5 rounded-full whitespace-nowrap">
+                    {{ paper.category }}
+                  </span>
+                </div>
+                
+                <!-- Abstract preview -->
+                <p class="text-gray-600 text-sm mb-3 line-clamp-3">{{ paper.abstractText }}</p>
+                
+                <!-- Keywords -->
+                <div class="flex flex-wrap gap-1 mb-3">
+                  <span *ngFor="let kw of paper.keywords | slice:0:3" 
+                        class="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                    {{ kw }}
+                  </span>
+                  <span *ngIf="paper.keywords.length > 3" class="text-xs text-gray-400">
+                    +{{ paper.keywords.length - 3 }}
+                  </span>
+                </div>
+                
+                <!-- Author & File info -->
+                <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+                  <span class="flex items-center gap-1">
+                    <fa-icon [icon]="faUser" class="w-3 h-3"></fa-icon>
+                    {{ getAuthorCount(paper.authorIds?.length || 0) }}
+                  </span>
+                </div>
+                
+                <!-- Metrics Row -->
+                <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <div class="flex gap-3">
+                    <button 
+                      (click)="$event.stopPropagation(); onLike(paper.id)"
+                      class="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1 py-0.5">
+                      <fa-icon [icon]="faThumbsUp" class="w-3 h-3"></fa-icon>
+                      <span>{{ paper.likesCount }}</span>
+                    </button>
+
+                    <button 
+                      (click)="$event.stopPropagation(); toggleComments(paper.id)"
+                      class="flex items-center gap-1 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 rounded px-1 py-0.5"
+                      [ngClass]="activeCommentPaperId === paper.id ? 'text-green-600 font-medium' : 'text-gray-500 hover:text-green-600'">
+                      <fa-icon [icon]="faComment" class="w-3 h-3"></fa-icon>
+                      <span>{{ paper.commentCount }}</span>
+                    </button>
+
+                    <button 
+                      (click)="$event.stopPropagation(); onDownload(paper.id)"
+                      class="flex items-center gap-1 text-xs text-gray-500 hover:text-purple-600 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 rounded px-1 py-0.5">
+                      <fa-icon [icon]="faDownload" class="w-3 h-3"></fa-icon>
+                      <span>{{ paper.downloadsCount }}</span>
+                    </button>
+                  </div>
+
+                  <button 
+                    (click)="$event.stopPropagation(); onOpenPaper(paper.id)"
+                    class="text-cyan-500 hover:text-cyan-600 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 rounded p-1"
+                    aria-label="Open paper">
+                    <fa-icon [icon]="faBookOpen" class="w-4 h-4"></fa-icon>
+                  </button>
+                </div>
+
+                <div 
+                  *ngIf="activeCommentPaperId === paper.id" 
+                  (click)="$event.stopPropagation()" 
+                  class="mt-4 pt-4 border-t border-gray-100 cursor-default">
+                  
+                  <div class="flex gap-3 items-start mb-4">
+                    <div class="h-8 w-8 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center shrink-0 overflow-hidden">
+                      <img *ngIf="userData.imageUrl" [src]="userData.imageUrl" class="w-full h-full object-cover" alt="User profile" />
+                      <fa-icon *ngIf="!userData.imageUrl" [icon]="faUser" class="text-white text-xs"></fa-icon>
+                    </div>
+                    
+                    <div class="flex-1">
+                      <div class="relative border border-gray-300 rounded-2xl focus-within:border-gray-400 focus-within:ring-1 focus-within:ring-gray-400 overflow-hidden bg-white px-3 py-2">
+                        <textarea 
+                          [(ngModel)]="newCommentText"
+                          placeholder="Add a comment..." 
+                          rows="1"
+                          class="w-full resize-none outline-none text-sm text-gray-800 placeholder-gray-400 bg-transparent align-middle py-1 max-h-24"
+                          (input)="adjustTextareaHeight($event)">
+                        </textarea>
+                      </div>
+                      
+                      <div *ngIf="newCommentText.trim()" class="flex justify-end mt-2 animate-fadeIn">
+                        <button 
+                          (click)="submitComment(paper.id)"
+                          class="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold text-xs px-3 py-1.5 rounded-full transition-colors shadow-sm">
+                          Post
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="space-y-3 mt-4" *ngIf="paper.comments && paper.comments.length > 0">
+                    <div *ngFor="let comment of paper.comments" class="flex gap-2.5 items-start">
+                      <div class="h-7 w-7 rounded-full bg-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
+                        <img *ngIf="comment.imageUrl" [src]="comment.imageUrl" class="w-full h-full object-cover" />
+                        <fa-icon *ngIf="!comment.imageUrl" [icon]="faUser" class="text-gray-400 text-xs"></fa-icon>
+                      </div>
+                      
+                      <div class="flex-1 bg-gray-100 rounded-2xl px-3 py-2 text-left">
+                        <div class="flex justify-between items-baseline mb-0.5">
+                          <span class="font-semibold text-xs text-gray-900 hover:underline cursor-pointer">{{ comment.username }}</span>
+                          <span class="text-[10px] text-gray-400">{{ comment.createdAt | date:'short' }}</span>
+                        </div>
+                        <p class="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap">{{ comment.content }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDEBAR - Events & Trending -->
+      <div class="w-full lg:w-72 shrink-0">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sticky top-20 mt-6">
+          <!-- Upcoming Events -->
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-gray-900">Upcoming Events</h3>
+            <a routerLink="/events" class="text-xs text-cyan-600 hover:text-cyan-700">
+              View all
+            </a>
+          </div>
+
+          <div class="space-y-4">
+            <div *ngFor="let event of upcomingEvents" class="group cursor-pointer">
+              <div class="flex gap-3">
+                <!-- Date Badge -->
+                <div class="w-12 h-12 bg-cyan-50 rounded-lg flex flex-col items-center justify-center shrink-0 group-hover:bg-cyan-100 transition-colors">
+                  <span class="text-xs text-cyan-600 font-medium">{{ getEventMonth(event.date) }}</span>
+                  <span class="text-sm font-bold text-cyan-700">{{ getEventDay(event.date) }}</span>
+                </div>
+                <!-- Event Details -->
+                <div class="flex-1">
+                  <h4 class="font-medium text-gray-900 text-sm group-hover:text-cyan-600 transition-colors line-clamp-2">
+                    {{ event.title }}
+                  </h4>
+                  <p class="text-xs text-gray-500 mt-1">{{ event.event_type }}</p>
+                  <div class="flex items-center gap-1 mt-1">
+                    <fa-icon [icon]="faUsers" class="w-3 h-3 text-gray-400"></fa-icon>
+                    <span class="text-xs text-gray-500">{{ event.attendees | number }} attending</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Host an Event Link -->
+          <div class="mt-4 pt-4 border-t border-gray-100">
+            <a routerLink="/user/events/create" class="flex items-center gap-2 text-sm text-cyan-600 hover:text-cyan-700">
+              <fa-icon [icon]="faCalendarAlt" class="w-4 h-4"></fa-icon>
+              <span>Host an event</span>
+            </a>
+          </div>
+
+          <!-- Trending Topics -->
+          <div class="mt-6">
+            <h3 class="font-bold text-gray-900 mb-3">Trending Topics</h3>
+            <div class="space-y-2">
+              <a *ngFor="let topic of trendingTopics"
+                 [routerLink]="['/topic', topic.slice(1)]"
+                 class="block text-sm text-cyan-600 hover:text-cyan-700 hover:underline">
+                {{ topic }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

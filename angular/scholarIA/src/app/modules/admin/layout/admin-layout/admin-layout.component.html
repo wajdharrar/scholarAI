@@ -1,0 +1,78 @@
+<div class="flex h-screen">
+  <!-- Sidebar -->
+  <div
+    class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transition-transform duration-300"
+    [class.translate-x-0]="sidebarOpen"
+    [class.-translate-x-full]="!sidebarOpen"
+  >
+    <!-- Logo -->
+    <div class="h-16 flex items-center px-6 border-b border-gray-100">
+      <img src="../../../../../assets/Google_Scholar_logo.png" alt="Logo" class="h-8 w-auto" />
+    </div>
+
+    <!-- User Profile -->
+    <div class="p-4 border-b border-gray-100">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
+          <span class="text-white font-medium">AD</span>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-900">Admin User</p>
+          <p class="text-xs text-gray-500">admin@scholaria.com</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="p-4 space-y-1">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.href"
+        routerLinkActive="bg-blue-50 text-blue-600"
+        [routerLinkActiveOptions]="{ exact: item.id === 'dashboard' ? false : true }"
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+      >
+        <fa-icon [icon]="item.icon" class="w-4 h-4"></fa-icon>
+        <span>{{ item.label }}</span>
+        <fa-icon
+          *ngIf="router.isActive(item.href, item.id === 'dashboard' ? false : true)"
+          [icon]="faChevronRight"
+          class=" ml-auto"
+        ></fa-icon>
+      </a>
+    </nav>
+
+    <!-- Bottom Actions -->
+    <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 bg-white">
+      <a
+        routerLink="/admin/settings"
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-gray-600 hover:bg-gray-50 transition-all"
+      >
+        <fa-icon [icon]="faCog" class="w-4 h-4"></fa-icon>
+        <span>Settings</span>
+      </a>
+      <button
+        (click)="handleSignOut()"
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-red-600 hover:bg-red-50 transition-all"
+      >
+        <fa-icon [icon]="faSignOutAlt" class="w-4 h-4"></fa-icon>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toggle Button (when sidebar is closed) -->
+  <button
+    *ngIf="!sidebarOpen"
+    (click)="toggleSidebar()"
+    class="fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg hover:bg-gray-50 text-gray-600"
+  >
+    <fa-icon [icon]="faBars" class="w-5 h-5"></fa-icon>
+  </button>
+
+  <main class="main-content">
+      <div class="content-wrapper ml-60 ">
+        <router-outlet></router-outlet>
+      </div>
+  </main>
+</div>

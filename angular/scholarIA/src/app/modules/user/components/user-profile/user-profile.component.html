@@ -1,0 +1,158 @@
+<div class="min-h-screen py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-5">
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+      <div class="animate-pulse text-gray-500">Loading profile...</div>
+    </div>
+
+    <!-- Profile Content -->
+    <div *ngIf="!isLoading">
+      <!-- Cover & Avatar Section -->
+      <div class="relative mb-8">
+        <!-- Cover Image -->
+        <div class="h-48 md:h-64 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 relative overflow-hidden">
+          <div class="absolute inset-0 bg-black opacity-10"></div>
+        </div>
+        
+        <!-- Avatar & Basic Info -->
+        <div class="relative px-4 sm:px-6">
+          <div class="flex flex-col sm:flex-row items-center sm:items-end -mt-16 sm:-mt-20 mb-6">
+            <!-- Avatar -->
+            <div class="relative">
+              <div class="h-28 w-28 sm:h-32 sm:w-32 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 p-1 shadow-lg">
+                <div class="h-full w-full rounded-full bg-white flex items-center justify-center overflow-hidden">
+                  <img *ngIf="profile?.imageUrl" [src]="profile?.imageUrl" [alt]="profile?.firstName" 
+                       class="w-full h-full object-cover" />
+                  <fa-icon *ngIf="!profile?.imageUrl" [icon]="faUser" class="absolute text-cyan-600"></fa-icon>
+                </div>
+              </div>
+              <button button (click)="showEditModal = true"
+                      class="absolute bottom-1 right-1 bg-white rounded-full p-1.5 shadow-md hover:bg-gray-50 transition-colors">
+                <fa-icon [icon]="faEdit" class="w-4 h-4 text-gray-600"></fa-icon>
+              </button>
+            </div>
+            
+            <!-- Name & Title -->
+            <div class="sm:ml-6 mt-4 sm:mt-0 text-center sm:text-left">
+              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">
+                {{ profile?.firstName }} {{ profile?.lastName }}
+              </h1>
+              <p class="text-cyan-600 font-medium">{{ profile?.institution }}</p>
+              <div class="flex flex-wrap gap-3 mt-2 justify-center sm:justify-start">
+                <span class="inline-flex items-center text-sm text-gray-500">
+                  <fa-icon [icon]="faMapMarkerAlt" class="w-4 h-4 mr-1"></fa-icon>
+                  {{ profile?.country }}
+                </span>
+                <span class="inline-flex items-center text-sm text-gray-500">
+                  <fa-icon [icon]="faCalendarAlt" class="w-4 h-4 mr-1"></fa-icon>
+                  Member since {{ profile?.createdAt }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two Column Layout -->
+      <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Left Column - Stats & Bio -->
+        <div class="lg:w-1/3 space-y-6">
+          <!-- Stats Cards -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Research Impact</h3>
+            <div class="space-y-4">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Papers Published</span>
+                <span class="text-2xl font-bold text-cyan-600">{{ papersPublished }}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Total Citations</span>
+                <span class="text-2xl font-bold text-cyan-600">{{ profile?.citationCount | number }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bio Card -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <fa-icon [icon]="faQuoteLeft" class="text-cyan-500"></fa-icon>
+              Bio
+            </h3>
+            <p class="text-gray-700 leading-relaxed">{{ profile?.bio }}</p>
+          </div>
+
+          <!-- Contact & Social -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Contact & Social</h3>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3 text-gray-700">
+                <fa-icon [icon]="faEnvelope" class="w-5 h-5 text-cyan-500"></fa-icon>
+                <span>{{ profile?.email }}</span>
+              </div>
+              <div class="flex items-center gap-3 text-gray-700">
+                <fa-icon [icon]="faBuilding" class="w-5 h-5 text-cyan-500"></fa-icon>
+                <span>{{ profile?.institution }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Papers & Activity -->
+        <div class="lg:w-2/3 space-y-6">
+          <!-- Recent Papers -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <fa-icon [icon]="faBookOpen" class="text-cyan-500"></fa-icon>
+                Recent Publications
+              </h3>
+              <a routerLink="/my-papers" class="text-sm text-cyan-600 hover:text-cyan-700 font-medium">
+                View all →
+              </a>
+            </div>
+            
+            <div class="space-y-6">
+              <div *ngFor="let paper of recentPapers" class="border-b border-gray-100 last:border-0 pb-5 last:pb-0">
+                <h4 class="text-md font-semibold text-gray-900 hover:text-cyan-600 cursor-pointer">
+                  {{ paper.title }}
+                </h4>
+                <p class="text-sm text-gray-600 mt-1">{{ paper.authorIds?.join(', ') }}</p>
+                <div class="flex flex-wrap items-center gap-3 mt-2 text-xs text-gray-500">
+                  <span class="flex items-center gap-1">
+                    <fa-icon [icon]="faKey " class="w-3 h-3"></fa-icon>
+                    {{ paper.keywords.join(', ') }}
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <fa-icon [icon]="faChartLine" class="w-3 h-3"></fa-icon>
+                    {{ paper.citations }} citations
+                  </span>
+                </div>
+                <p class="text-sm text-gray-600 mt-2 line-clamp-2">{{ paper.abstractText }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Collaboration Stats (Optional) -->
+          <div class="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl border border-cyan-100 p-6">
+            <div class="flex items-center gap-3">
+              <div class="p-3 bg-white rounded-full shadow-sm">
+                <fa-icon [icon]="faUsers" class="w-6 h-6 text-cyan-600"></fa-icon>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900">Collaboration Network</h3>
+                <p class="text-sm text-gray-600">You have collaborated with 24 researchers across 8 institutions</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<app-edit-profile-modal
+  *ngIf="showEditModal"
+  [user]="currentUser"
+  (closed)="showEditModal = false"
+  (updated)="onProfileUpdated($event)"
+/>

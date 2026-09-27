@@ -1,0 +1,72 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+     (click)="close()">
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6"
+       (click)="$event.stopPropagation()">
+
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-semibold text-gray-800">Add Domain</h2>
+      <button type="button" (click)="close()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <form [formGroup]="addForm" (ngSubmit)="onSubmit()" class="space-y-4">
+
+      <!-- Logo preview -->
+      <div class="flex justify-center">
+        <div class="w-20 h-20 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden bg-gray-50">
+          <img *ngIf="logoPreview" [src]="logoPreview" class="w-full h-full object-cover"
+               onerror="this.style.display='none'" alt="logo preview" />
+          <span *ngIf="!logoPreview" class="text-xs text-gray-400 text-center px-2">Logo preview</span>
+        </div>
+      </div>
+
+      <!-- Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Domain Name *</label>
+        <input type="text" formControlName="name" placeholder="e.g., Computer Science"
+               class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:bg-white"
+               [class.border-red-400]="name?.invalid && name?.touched"
+               [class.border-gray-200]="!name?.invalid || !name?.touched" />
+        <div *ngIf="name?.invalid && name?.touched" class="text-xs text-red-500 mt-1">
+          <span *ngIf="name?.errors?.['required']">Required.</span>
+          <span *ngIf="name?.errors?.['minlength']">Min 10 characters.</span>
+          <span *ngIf="name?.errors?.['maxlength']">Max 50 characters.</span>
+        </div>
+      </div>
+
+      <!-- Logo URL -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Logo URL *</label>
+        <input type="url" formControlName="logo" placeholder="https://example.com/logo.png"
+               class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:bg-white"
+               [class.border-red-400]="logo?.invalid && logo?.touched"
+               [class.border-gray-200]="!logo?.invalid || !logo?.touched" />
+        <div *ngIf="logo?.invalid && logo?.touched" class="text-xs text-red-500 mt-1">
+          <span *ngIf="logo?.errors?.['required']">Required.</span>
+        </div>
+        <p class="text-xs text-gray-400 mt-1">Paste a publicly accessible image URL</p>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-2">
+        <button type="button" (click)="close()"
+                class="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="addForm.invalid || isLoading"
+                class="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
+                [class.bg-cyan-500]="!addForm.invalid && !isLoading"
+                [class.text-white]="!addForm.invalid && !isLoading"
+                [class.bg-gray-100]="addForm.invalid || isLoading"
+                [class.text-gray-400]="addForm.invalid || isLoading"
+                [class.cursor-not-allowed]="addForm.invalid || isLoading">
+          {{ isLoading ? 'Creating...' : 'Create Domain' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

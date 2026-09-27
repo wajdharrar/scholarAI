@@ -1,0 +1,181 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      <div class="max-w-md w-full">
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <h1 class="text-3xl font-light text-cyan-800 mb-2">Create your account</h1>
+          <p class="text-gray-500">Join our research community</p>
+        </div>
+
+        <!-- Main Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+          <!-- Social Login (placeholders) -->
+          <div class="space-y-3 mb-6">
+            <button type="button" class="w-full relative flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all group">
+              <fa-icon [icon]="faGoogle" class="w-4 h-4"></fa-icon>
+
+              <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900">Continue with Google</span>
+            </button>
+            <button type="button" class="w-full relative flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all group">
+              <fa-icon [icon]="faGithub" class="w-4 h-4"></fa-icon>
+              <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900">Continue with GitHub</span>
+            </button>
+          </div>
+
+          <div class="relative mb-6">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-200"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-4 bg-white text-gray-500">or create with email</span>
+            </div>
+          </div>
+
+          <!-- Form -->
+          <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+              <!-- First Name -->
+              <div>
+                <div class="relative">
+                  <fa-icon [icon]="faUser" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+                  <input
+                    type="text"
+                    formControlName="firstName"
+                    placeholder="First name"
+                    class="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none transition-all"
+                    [class.border-red-500]="firstName?.invalid && firstName?.touched"
+                    [class.border-gray-200]="!firstName?.invalid || !firstName?.touched"
+                  />
+                </div>
+                <div *ngIf="firstName?.invalid && firstName?.touched" class="text-xs text-red-500 mt-1">
+                  First name must contain only letters.
+                </div>
+              </div>
+
+              <!-- Last Name -->
+              <div>
+                <div class="relative">
+                  <fa-icon [icon]="faUser" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+                  <input
+                    type="text"
+                    formControlName="lastName"
+                    placeholder="Last name"
+                    class="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none transition-all"
+                    [class.border-red-500]="lastName?.invalid && lastName?.touched"
+                    [class.border-gray-200]="!lastName?.invalid || !lastName?.touched"
+                  />
+                </div>
+                <div *ngIf="lastName?.invalid && lastName?.touched" class="text-xs text-red-500 mt-1">
+                  Last name must contain only letters.
+                </div>
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="relative">
+                <fa-icon [icon]="faEnvelope" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>              
+              <input
+                type="email"
+                formControlName="email"
+                placeholder="Email address"
+                class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+              />
+            </div>
+
+            <!-- Password -->
+            <div>
+              <div class="relative">
+                <fa-icon [icon]="faLock" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+                <input
+                  type="password"
+                  formControlName="password"
+                  placeholder="Password (min. 8 characters)"
+                  class="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none transition-all"
+                  [class.border-red-500]="password?.invalid && password?.touched"
+                  [class.border-gray-200]="!password?.invalid || !password?.touched"
+                />
+              </div>
+              <div *ngIf="password?.value" class="space-y-1 mt-2">
+                <div class="flex gap-1 h-1">
+                  <div class="flex-1 rounded-full" [class.bg-green-500]="password?.value?.length >= 8" [class.bg-gray-200]="password?.value?.length < 8"></div>
+                  <div class="flex-1 rounded-full" [class.bg-green-500]="hasUpperCase(password?.value)" [class.bg-gray-200]="!hasUpperCase(password?.value)"></div>
+                  <div class="flex-1 rounded-full" [class.bg-green-500]="hasNumber(password?.value)" [class.bg-gray-200]="!hasNumber(password?.value)"></div>
+                  <div class="flex-1 rounded-full" [class.bg-green-500]="hasSpecialChar(password?.value)" [class.bg-gray-200]="!hasSpecialChar(password?.value)"></div>
+                </div>
+                <p class="text-xs text-gray-500">8+ chars, uppercase, number, special char (!@#$%^&*)</p>
+              </div>
+              <div *ngIf="password?.invalid && password?.touched && password?.errors?.['pattern']" class="text-xs text-red-500 mt-1">
+                Password must contain uppercase, lowercase, number, and special character.
+              </div>
+            </div>
+
+            <!-- Confirm Password -->
+            <div>
+              <div class="relative">
+                <fa-icon [icon]="faLock" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+                <input
+                  type="password"
+                  formControlName="confirmPassword"
+                  placeholder="Confirm Password"
+                  class="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none transition-all"
+                  [class.border-red-500]="signupForm.errors?.['mismatch'] && confirmPassword?.touched"
+                  [class.border-gray-200]="!signupForm.errors?.['mismatch'] || !confirmPassword?.touched"
+                />
+              </div>
+              <div *ngIf="signupForm.errors?.['mismatch'] && confirmPassword?.touched" class="text-xs text-red-500 mt-1">
+                Passwords do not match.
+              </div>
+            </div>
+
+            <!-- Institution -->
+            <div class="relative">
+              <fa-icon [icon]="faBuildingColumns" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+              <input
+                type="text"
+                formControlName="institution"
+                placeholder="Institution"
+                class="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none transition-all"
+                [class.border-red-500]="institution?.invalid && institution?.touched"
+                [class.border-gray-200]="!institution?.invalid || !institution?.touched"
+              />
+              <div *ngIf="institution?.invalid && institution?.touched" class="text-xs text-red-500 mt-1">
+                Institution must contain only letters.
+              </div>
+            </div>
+
+            <!-- Country -->
+            <div class="relative">
+              <fa-icon [icon]="faEarthEurope" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+              <input
+                type="text"
+                formControlName="country"
+                placeholder="Country"
+                class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+              />
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              [disabled]="signupForm.invalid || isLoading"
+              class="w-full mt-6 py-3 rounded-xl font-medium text-sm transition-all flex items-center justify-center gap-2 group"
+              [class.bg-blue-600]="signupForm.valid && !isLoading"
+              [class.hover:bg-blue-700]="signupForm.valid && !isLoading"
+              [class.text-white]="signupForm.valid && !isLoading"
+              [class.shadow-lg]="signupForm.valid && !isLoading"
+              [class.bg-gray-100]="signupForm.invalid || isLoading"
+              [class.text-gray-400]="signupForm.invalid || isLoading"
+              [class.cursor-not-allowed]="signupForm.invalid || isLoading"
+            >
+              <span>{{ isLoading ? 'Creating account...' : 'Sign Up' }}</span>
+              <i *ngIf="!isLoading" class="fas fa-arrow-right w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"></i>
+            </button>
+          </form>
+
+          <!-- Sign In Link -->
+          <p class="text-center mt-6 text-sm text-gray-500">
+            Already have an account?
+            <a routerLink="/signin" class="text-blue-600 hover:underline font-medium">Sign in</a>
+          </p>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,102 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm overflow-y-auto py-8"
+     (click)="close()">
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4"
+       (click)="$event.stopPropagation()">
+
+    <!-- Banner image -->
+    <div class="w-full h-48 rounded-t-2xl overflow-hidden bg-gray-100">
+      <img *ngIf="event?.imageUrl" [src]="getFileUrl(event.imageUrl)"
+           class="w-full h-full object-cover" alt="event banner" />
+      <div *ngIf="!event?.imageUrl" class="w-full h-full flex items-center justify-center text-gray-300 text-sm">
+        No banner image
+      </div>
+    </div>
+
+    <div class="p-6">
+      <!-- Header -->
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex-1">
+          <h2 class="text-xl font-semibold text-gray-900">{{ event?.title }}</h2>
+          <p class="text-sm text-gray-500 mt-1">{{ event?.organizer }}</p>
+        </div>
+        <button type="button" (click)="close()" class="text-gray-400 hover:text-gray-600 ml-4 shrink-0">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Status & Format badges -->
+      <div class="flex gap-2 mb-4 flex-wrap">
+        <span class="px-3 py-1 rounded-full text-xs font-medium border"
+              [ngClass]="{
+                'bg-blue-100 text-blue-700 border-blue-200':   event?.status === 'UPCOMING',
+                'bg-green-100 text-green-700 border-green-200': event?.status === 'ONGOING',
+                'bg-gray-100 text-gray-700 border-gray-200':    event?.status === 'COMPLETED' || event?.status === 'DRAFT',
+                'bg-red-100 text-red-700 border-red-200':       event?.status === 'CANCELLED'
+              }">
+          {{ event?.status }}
+        </span>
+        <span class="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+          {{ getFormatLabel(event?.eventFormat) }}
+        </span>
+        <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+          {{ event?.eventType  }}
+        </span>
+      </div>
+
+      <!-- Info grid -->
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="bg-gray-50 rounded-xl p-3">
+          <p class="text-xs text-gray-500 mb-1">Start</p>
+          <p class="text-sm font-medium text-gray-800">{{ event?.startDateTime }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-3">
+          <p class="text-xs text-gray-500 mb-1">End</p>
+          <p class="text-sm font-medium text-gray-800">{{ event?.endDateTime }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-3">
+          <p class="text-xs text-gray-500 mb-1">Registration Deadline</p>
+          <p class="text-sm font-medium text-gray-800">{{ event?.registrationDeadline }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-3">
+          <p class="text-xs text-gray-500 mb-1">Price</p>
+          <p class="text-sm font-medium text-gray-800">
+            <span *ngIf="event?.price === 0" class="text-green-600">Free</span>
+            <span *ngIf="event?.price > 0">{{ event?.price }} {{ event?.currency }}</span>
+          </p>
+        </div>
+        <div *ngIf="event?.location" class="bg-gray-50 rounded-xl p-3">
+          <p class="text-xs text-gray-500 mb-1">Location</p>
+          <p class="text-sm font-medium text-gray-800">{{ event?.location }}</p>
+        </div>
+        <div *ngIf="event?.virtualLink" class="bg-gray-50 rounded-xl p-3">
+          <p class="text-xs text-gray-500 mb-1">Virtual Link</p>
+          <a [href]="event?.virtualLink" target="_blank"
+             class="text-sm font-medium text-blue-600 hover:underline truncate block">
+            {{ event?.virtualLink }}
+          </a>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-3">
+          <p class="text-xs text-gray-500 mb-1">Speakers</p>
+          <p class="text-sm font-medium text-gray-800">{{ event?.speakerCount }}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-3">
+          <p class="text-xs text-gray-500 mb-1">Attendees</p>
+          <p class="text-sm font-medium text-gray-800">{{ event?.currentAttendees }}</p>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="mb-4">
+        <p class="text-xs text-gray-500 mb-1">Description</p>
+        <p class="text-sm text-gray-700 leading-relaxed">{{ event?.description }}</p>
+      </div>
+
+      <button type="button" (click)="close()"
+              class="w-full py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+        Close
+      </button>
+    </div>
+  </div>
+</div>

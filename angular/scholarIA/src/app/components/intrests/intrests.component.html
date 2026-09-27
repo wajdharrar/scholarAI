@@ -1,0 +1,110 @@
+<div *ngIf="!isInitialLoading && hasValidData; else loading" class="interests-container">
+  <div class="max-w-2xl w-full">
+    <!-- Progress Indicator -->
+    <div class="progress-section">
+      <div class="text-center mb-8">
+        <h1 class="main-title">What are you interested in?</h1>
+      </div>
+      <div class="progress-header">
+        <span class="step-label">Step 3 of 3</span>
+        <span class="step-name">Your interests</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" style="width: 100%"></div>
+      </div>
+      <div class="step-circles">
+        <div class="step-circle completed">✓</div>
+        <div class="step-circle completed">✓</div>
+        <div class="step-circle active">3</div>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <p class="subtitle">Choose up to 5 topics to personalize your feed</p>
+    </div>
+
+    <!-- Main Card -->
+    <div class="main-card">
+      <!-- Interests Grid -->
+      <div class="interests-grid">
+        <button
+          *ngFor="let interest of interests"
+          (click)="toggleInterest(interest.id)"
+          [disabled]="isLoading"
+          class="interest-btn"
+          [class.selected]="selectedInterests.includes(interest.name)"
+          [class.disabled]="isLoading"
+        >
+          <div class="interest-content">
+            <div class="interest-icon" [ngClass]="interest.color">
+              <fa-icon [icon]="interest.icon" size="lg"></fa-icon>
+            </div>
+            <span class="interest-name">{{ interest.name }}</span>
+          </div>
+          <div *ngIf="selectedInterests.includes(interest.name)" class="check-badge">
+            <fa-icon [icon]="faCheck"></fa-icon>
+          </div>
+        </button>
+      </div>
+
+      <!-- Selection Counter -->
+      <div class="selection-info">
+        <span class="counter">{{ selectedInterests.length }} of 5 selected</span>
+        <span *ngIf="selectedInterests.length === 5" class="max-badge">
+          Maximum reached
+        </span>
+      </div>
+
+      <!-- AI Recommendation Preview -->
+      <div class="ai-preview">
+        <div class="ai-header">
+          <fa-icon [icon]="faRobot" size="lg"></fa-icon>
+          <h3 class="ai-title">AI-Powered Recommendations</h3>
+        </div>
+        <p class="ai-text">
+          Based on your interests, we'll curate a personalized feed of research papers,
+          upcoming events, and collaboration opportunities.
+        </p>
+        <div class="ai-tags">
+          <ng-container *ngIf="selectedInterests.length > 0; else noInterests">
+            <span *ngFor="let name of selectedInterests | slice:0:3" class="tag">{{ name }}</span>
+            <span *ngIf="selectedInterests.length > 3" class="tag">+{{ selectedInterests.length - 3 }} more</span>
+          </ng-container>
+          <ng-template #noInterests>
+            <span class="placeholder-text">Select interests to see preview</span>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="nav-buttons">
+        <button class="btn-back" (click)="goBack()" [disabled]="isLoading">
+          <fa-icon [icon]="faArrowLeft"></fa-icon>
+          Back
+        </button>
+
+        <button
+          class="btn-complete"
+          (click)="handleComplete()"
+          [disabled]="selectedInterests.length === 0 || isLoading"
+          [class.active]="selectedInterests.length > 0 && !isLoading"
+        >
+          <span>{{ isLoading ? 'Creating account...' : 'Complete Setup' }}</span>
+          <fa-icon [icon]="faArrowRight" class="arrow-icon"></fa-icon>
+        </button>
+      </div>
+
+      <!-- Info Text -->
+      <div class="info-text">
+        <p class="info-message">
+          {{ selectedInterests.length === 0 ? 'Select at least one interest to continue' : selectedInterests.length + ' of 5 interests selected' }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="loading-screen">Loading...</div>
+</ng-template>

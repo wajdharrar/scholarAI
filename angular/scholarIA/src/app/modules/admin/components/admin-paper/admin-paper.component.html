@@ -1,0 +1,333 @@
+<div class="min-h-screen bg-gray-50 p-6 pt-0 mt-0">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-light text-gray-900 mb-2">Research Papers</h1>
+    <p class="text-gray-500">Manage and monitor all research papers on the platform</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+      <p class="text-sm text-gray-500 mb-1">Total Papers</p>
+      <p class="text-2xl font-bold text-gray-900">{{ papers.length }}</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+      <p class="text-sm text-gray-500 mb-1">Published</p>
+      <p class="text-2xl font-bold text-green-600">{{ publishedCount }}</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+      <p class="text-sm text-gray-500 mb-1">Under Review</p>
+      <p class="text-2xl font-bold text-yellow-600">{{ underReviewCount }}</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+      <p class="text-sm text-gray-500 mb-1">Rejected</p>
+      <p class="text-2xl font-bold text-purple-600">{{ rejectedCount }}</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+      <p class="text-sm text-gray-500 mb-1">Total Downloads</p>
+      <p class="text-2xl font-bold text-purple-600">{{ totalDownloads | number }}</p>
+    </div>
+  </div>
+
+  <!-- Actions Bar -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-6">
+    <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+
+      <!-- Search -->
+      <div class="relative flex-1 w-full">
+        <fa-icon [icon]="faSearch" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+        <input
+          type="text"
+          placeholder="Search papers by title, author..."
+          [(ngModel)]="searchTerm"
+          class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+        />
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-2 w-full sm:w-auto">
+
+        <!-- Status Filter -->
+        <div class="relative">
+          <button
+            (click)="showFilterMenu = !showFilterMenu"
+            class="px-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all flex items-center gap-2"
+          >
+            <fa-icon [icon]="faFilter" class="w-4 h-4"></fa-icon>
+            <span>Status</span>
+            <span *ngIf="selectedFilter !== 'all'" class="w-2 h-2 bg-blue-500 rounded-full"></span>
+          </button>
+          <div *ngIf="showFilterMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-10">
+            <button
+              *ngFor="let filter of statusFilters"
+              (click)="selectStatusFilter(filter)"
+              class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 capitalize"
+              [class.text-blue-600]="selectedFilter === filter"
+              [class.bg-blue-50]="selectedFilter === filter"
+              [class.text-gray-700]="selectedFilter !== filter"
+            >
+              {{ formatStatus(filter) }}
+              <span *ngIf="filter !== 'all'">({{ getPaperCountByStatus(filter) }})</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="relative">
+          <button
+            (click)="showCategoryMenu = !showCategoryMenu"
+            class="px-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all flex items-center gap-2"
+          >
+            <fa-icon [icon]="faTag" class="w-4 h-4"></fa-icon>
+            <span>Category</span>
+            <span *ngIf="selectedCategory !== 'all'" class="w-2 h-2 bg-blue-500 rounded-full"></span>
+          </button>
+          <div *ngIf="showCategoryMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-10">
+            <button
+              *ngFor="let category of categories"
+              (click)="selectCategoryFilter(category)"
+              class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 capitalize"
+              [class.text-blue-600]="selectedCategory === category"
+              [class.bg-blue-50]="selectedCategory === category"
+              [class.text-gray-700]="selectedCategory !== category"
+            >
+              {{ category }}
+              <span *ngIf="category !== 'all'">({{ getPaperCountByCategory(category) }})</span>
+            </button>
+          </div>
+        </div>
+
+        <button
+          (click)="addPaper()"
+          class="px-4 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl text-sm font-medium hover:shadow-lg transition-all flex items-center gap-2"
+        >
+          <fa-icon [icon]="faPlus" class="w-4 h-4"></fa-icon>
+          <span>Add Paper</span>
+        </button>
+
+        <button
+          (click)="refreshPapers()"
+          class="px-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all"
+        >
+          <fa-icon [icon]="faRefresh" class="w-4 h-4"></fa-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Filters -->
+    <div *ngIf="hasActiveFilters" class="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100">
+      <span class="text-xs text-gray-500">Active filters:</span>
+      <span *ngIf="selectedFilter !== 'all'" class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs flex items-center gap-2">
+        Status: {{ formatStatus(selectedFilter) }}
+        <button (click)="selectStatusFilter('all')" class="hover:text-blue-800">×</button>
+      </span>
+      <span *ngIf="selectedCategory !== 'all'" class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs flex items-center gap-2">
+        Category: {{ selectedCategory }}
+        <button (click)="selectCategoryFilter('all')" class="hover:text-blue-800">×</button>
+      </span>
+    </div>
+  </div>
+
+  <!-- Papers Table -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="w-12 px-6 py-4">
+              <input
+                type="checkbox"
+                [checked]="isAllSelected()"
+                (change)="toggleSelectAll()"
+                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+            </th>
+            <th class="px-6 py-4 text-left">
+              <button (click)="setSort('title')" class="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700">
+                Title &amp; Authors <fa-icon [icon]="getSortIcon('title')" class="w-3 h-3"></fa-icon>
+              </button>
+            </th>
+            <th class="px-6 py-4 text-left">
+              <button (click)="setSort('category')" class="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700">
+                Category <fa-icon [icon]="getSortIcon('category')" class="w-3 h-3"></fa-icon>
+              </button>
+            </th>
+            <th class="px-6 py-4 text-left">
+              <button (click)="setSort('downloads')" class="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700">
+                Downloads <fa-icon [icon]="getSortIcon('downloads')" class="w-3 h-3"></fa-icon>
+              </button>
+            </th>
+            <th class="px-6 py-4 text-left">
+              <button (click)="setSort('citations')" class="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700">
+                Citations <fa-icon [icon]="getSortIcon('citations')" class="w-3 h-3"></fa-icon>
+              </button>
+            </th>
+            <th class="px-6 py-4 text-left">
+              <button (click)="setSort('status')" class="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700">
+                Status <fa-icon [icon]="getSortIcon('status')" class="w-3 h-3"></fa-icon>
+              </button>
+            </th>
+            <th class="px-6 py-4 text-left">
+              <button (click)="setSort('publishedDate')" class="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700">
+                Published <fa-icon [icon]="getSortIcon('publishedDate')" class="w-3 h-3"></fa-icon>
+              </button>
+            </th>
+            <th class="px-6 py-4 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr
+            *ngFor="let paper of paginatedPapers"
+            class="hover:bg-gray-50 transition-colors"
+            [class.bg-blue-50]="selectedPapers.includes(paper.id)"
+          >
+            <td class="px-6 py-4">
+              <input
+                type="checkbox"
+                [checked]="selectedPapers.includes(paper.id)"
+                (change)="toggleSelectPaper(paper.id)"
+                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-start gap-3">
+                <div>
+                  <p class="font-medium text-gray-900 hover:text-blue-600 cursor-pointer">{{ paper.title }}</p>
+                  <p class="text-sm text-gray-500 mt-1">{{ paper.authorIds?.join(', ') }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
+                {{ paper.category }}
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <fa-icon [icon]="faDownload" class="w-3 h-3 text-gray-400"></fa-icon>
+                <span class="text-sm text-gray-700">{{ paper.downloadsCount | number }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <fa-icon [icon]="faStar" class="w-3 h-3 text-yellow-400"></fa-icon>
+                <span class="text-sm text-gray-700">{{ paper.citations }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span
+                class="px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1 w-fit"
+                [ngClass]="getStatusColor(paper.status)"
+              >
+                <fa-icon [icon]="getStatusIcon(paper.status)" class="w-3 h-3"></fa-icon>
+                {{ formatStatus(paper.status) }}
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <fa-icon [icon]="faCalendar" class="w-3 h-3 text-gray-400"></fa-icon>
+                <span class="text-sm text-gray-700">{{ paper.publicationDate }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center justify-end gap-2">
+                <button (click)="viewPaper(paper.id)" class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-blue-600 transition-colors">
+                  <fa-icon [icon]="faEye" class="w-4 h-4"></fa-icon>
+                </button>
+                <button (click)="editPaper(paper.id)" class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-green-600 transition-colors">
+                  <fa-icon [icon]="faEdit" class="w-4 h-4"></fa-icon>
+                </button>
+                <button (click)="deletePaper(paper.id)" class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-red-600 transition-colors">
+                  <fa-icon [icon]="faTrash" class="w-4 h-4"></fa-icon>
+                </button>
+                <button class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 transition-colors">
+                  <fa-icon [icon]="faEllipsisVertical" class="w-4 h-4"></fa-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-gray-500">Show</span>
+        <select
+          [value]="itemsPerPage"
+          (change)="onItemsPerPageChange($any($event.target).value)"
+          class="px-2 py-1 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
+        >
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <span class="text-sm text-gray-500">entries</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-gray-500">
+          Showing {{ startIndex + 1 }} to {{ endIndex }} of {{ sortedPapers.length }} papers
+        </span>
+
+        <div class="flex gap-1">
+          <button
+            (click)="previousPage()"
+            [disabled]="currentPage === 1"
+            class="p-2 rounded-lg border transition-colors"
+            [class.border-gray-200]="currentPage !== 1"
+            [class.text-gray-600]="currentPage !== 1"
+            [class.hover:bg-gray-50]="currentPage !== 1"
+            [class.hover:text-blue-600]="currentPage !== 1"
+            [class.border-gray-100]="currentPage === 1"
+            [class.text-gray-300]="currentPage === 1"
+            [class.cursor-not-allowed]="currentPage === 1"
+          >
+            <fa-icon [icon]="faChevronLeft" class="w-4 h-4"></fa-icon>
+          </button>
+
+          <button
+            *ngFor="let page of getPageNumbers()"
+            (click)="goToPage(page)"
+            class="w-10 h-10 rounded-lg text-sm font-medium transition-colors"
+            [class.bg-blue-600]="currentPage === page"
+            [class.text-white]="currentPage === page"
+            [class.border]="currentPage !== page"
+            [class.border-gray-200]="currentPage !== page"
+            [class.text-gray-600]="currentPage !== page"
+          >
+            {{ page }}
+          </button>
+
+          <button
+            (click)="nextPage()"
+            [disabled]="currentPage === totalPages"
+            class="p-2 rounded-lg border transition-colors"
+            [class.border-gray-200]="currentPage !== totalPages"
+            [class.text-gray-600]="currentPage !== totalPages"
+            [class.hover:bg-gray-50]="currentPage !== totalPages"
+            [class.hover:text-blue-600]="currentPage !== totalPages"
+            [class.border-gray-100]="currentPage === totalPages"
+            [class.text-gray-300]="currentPage === totalPages"
+            [class.cursor-not-allowed]="currentPage === totalPages"
+          >
+            <fa-icon [icon]="faChevronRight" class="w-4 h-4"></fa-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<app-edit-paper-modal
+  *ngIf="showEditModal"
+  [paper]="selectedPaper"
+  (closed)="showEditModal = false"
+  (updated)="onPaperUpdated($event)"
+/>
+<app-add-paper-modal
+  *ngIf="showAddModal"
+  (closed)="showAddModal = false"
+  (created)="onPaperCreated()"
+/>

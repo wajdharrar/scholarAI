@@ -1,0 +1,148 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm overflow-y-auto py-8"
+     (click)="close()">
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 p-6"
+       (click)="$event.stopPropagation()">
+
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-semibold text-gray-800">Edit Event</h2>
+      <button type="button" (click)="close()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="space-y-4">
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+        <input type="text" formControlName="title"
+               class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:bg-white"
+               [class.border-red-400]="title?.invalid && title?.touched"
+               [class.border-gray-200]="!title?.invalid || !title?.touched" />
+        <div *ngIf="title?.invalid && title?.touched" class="text-xs text-red-500 mt-1">
+          <span *ngIf="title?.errors?.['required']">Required.</span>
+          <span *ngIf="title?.errors?.['minlength']">Min 10 characters.</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+        <textarea formControlName="description" rows="3"
+                  class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:bg-white resize-y"
+                  [class.border-red-400]="description?.invalid && description?.touched"
+                  [class.border-gray-200]="!description?.invalid || !description?.touched"></textarea>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Event Type *</label>
+          <select formControlName="eventType"
+                  class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:bg-white">
+            <option value="" disabled>Select type</option>
+            <option *ngFor="let t of eventTypes" [value]="t">{{ t | titlecase }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Format *</label>
+          <select formControlName="eventFormat"
+                  class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:bg-white">
+            <option value="" disabled>Select format</option>
+            <option *ngFor="let f of eventFormats" [value]="f">{{ f | titlecase }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div *ngIf="eventFormat?.value === 'IN_PERSON' || eventFormat?.value === 'HYBRID'">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Location *</label>
+        <input type="text" formControlName="location"
+               class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:bg-white"
+               [class.border-red-400]="location?.invalid && location?.touched"
+               [class.border-gray-200]="!location?.invalid || !location?.touched" />
+      </div>
+
+      <div *ngIf="eventFormat?.value === 'ONLINE' || eventFormat?.value === 'HYBRID'">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Virtual Link *</label>
+        <input type="url" formControlName="virtualLink"
+               class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:bg-white"
+               [class.border-red-400]="virtualLink?.invalid && virtualLink?.touched"
+               [class.border-gray-200]="!virtualLink?.invalid || !virtualLink?.touched" />
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Start *</label>
+          <input type="datetime-local" formControlName="startDateTime"
+                 class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:bg-white"
+                 [class.border-red-400]="startDateTime?.invalid && startDateTime?.touched"
+                 [class.border-gray-200]="!startDateTime?.invalid || !startDateTime?.touched" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">End *</label>
+          <input type="datetime-local" formControlName="endDateTime"
+                 class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:bg-white"
+                 [class.border-red-400]="endDateTime?.invalid && endDateTime?.touched"
+                 [class.border-gray-200]="!endDateTime?.invalid || !endDateTime?.touched" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Reg. Deadline *</label>
+          <input type="datetime-local" formControlName="registrationDeadline"
+                 class="w-full px-3 py-2 bg-gray-50 border rounded-xl text-sm outline-none focus:ring-2 focus:bg-white"
+                 [class.border-red-400]="registrationDeadline?.invalid && registrationDeadline?.touched"
+                 [class.border-gray-200]="!registrationDeadline?.invalid || !registrationDeadline?.touched" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Price *</label>
+          <input type="number" formControlName="price" min="0" step="0.01"
+                 class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:bg-white" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Currency *</label>
+          <select formControlName="currency"
+                  class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:bg-white">
+            <option *ngFor="let c of currencies" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Speakers</label>
+          <input type="number" formControlName="speakerCount" min="0"
+                 class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:bg-white" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Banner Image <span class="text-gray-400 font-normal">(optional — leave empty to keep current)</span>
+        </label>
+        <div class="flex items-center gap-4">
+          <label class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-300 rounded-xl text-sm text-gray-700 hover:bg-gray-200 transition-colors">
+            Choose Image
+            <input type="file" accept="image/*" (change)="onImageSelected($event)" hidden />
+          </label>
+          <img *ngIf="imagePreviewUrl" [src]="imagePreviewUrl"
+               class="w-16 h-16 object-cover rounded-lg border" alt="preview" />
+        </div>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button type="button" (click)="close()"
+                class="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="editForm.invalid || isLoading"
+                class="flex-1 py-2.5 rounded-xl text-sm font-medium transition-all"
+                [class.bg-cyan-500]="!editForm.invalid && !isLoading"
+                [class.text-white]="!editForm.invalid && !isLoading"
+                [class.bg-gray-100]="editForm.invalid || isLoading"
+                [class.text-gray-400]="editForm.invalid || isLoading"
+                [class.cursor-not-allowed]="editForm.invalid || isLoading">
+          {{ isLoading ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

@@ -1,0 +1,220 @@
+<div class="min-h-screen py-8 px-4">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-light text-cyan-800 mb-2">Create New Event</h1>
+      <p class="text-gray-500">Organize and share your research event with the community</p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+      <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Title -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Event Title *</label>
+          <input
+            type="text"
+            formControlName="title"
+            placeholder="e.g., International Conference on AI in Healthcare"
+            class="w-full px-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none transition-all"
+            [class.border-red-500]="title?.invalid && title?.touched"
+            [class.border-gray-200]="!title?.invalid || !title?.touched"
+          />
+          <div *ngIf="title?.invalid && title?.touched" class="text-xs text-red-500 mt-1">
+            <span *ngIf="title?.errors?.['required']">Title is required.</span>
+            <span *ngIf="title?.errors?.['minlength']">Minimum 5 characters.</span>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+          <textarea
+            formControlName="description"
+            rows="5"
+            placeholder="Provide a detailed description of the event..."
+            class="w-full px-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none transition-all resize-y"
+            [class.border-red-500]="description?.invalid && description?.touched"
+            [class.border-gray-200]="!description?.invalid || !description?.touched"
+          ></textarea>
+          <div *ngIf="description?.invalid && description?.touched" class="text-xs text-red-500 mt-1">
+            <span *ngIf="description?.errors?.['required']">Description is required.</span>
+            <span *ngIf="description?.errors?.['minlength']">Minimum 20 characters.</span>
+          </div>
+        </div>
+
+        <!-- Two columns: Event Type & Format -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Event Type *</label>
+            <select
+              formControlName="eventType"
+              class="w-full px-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none"
+              [class.border-red-500]="eventType?.invalid && eventType?.touched"
+            >
+              <option value="" disabled>Select type</option>
+              <option *ngFor="let type of eventTypes" [value]="type">{{ type | titlecase }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Event Format *</label>
+            <select
+              formControlName="eventFormat"
+              class="w-full px-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none"
+              [class.border-red-500]="eventFormat?.invalid && eventFormat?.touched"
+            >
+              <option value="" disabled>Select format</option>
+              <option *ngFor="let format of eventFormats" [value]="format">{{ format | titlecase }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Conditional fields based on format -->
+        <div *ngIf="eventFormat?.value === 'IN_PERSON' || eventFormat?.value === 'HYBRID'">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Location *</label>
+          <div class="relative">
+            <fa-icon [icon]="faMapMarkerAlt" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+            <input
+              type="text"
+              formControlName="location"
+              placeholder="Venue address, city, country"
+              class="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none"
+              [class.border-red-500]="location?.invalid && location?.touched"
+            />
+          </div>
+          <div *ngIf="location?.invalid && location?.touched" class="text-xs text-red-500 mt-1">Location is required for in-person/hybrid events.</div>
+        </div>
+
+        <div *ngIf="eventFormat?.value === 'ONLINE' || eventFormat?.value === 'HYBRID'">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Virtual Link *</label>
+          <div class="relative">
+            <fa-icon [icon]="faVideo" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+            <input
+              type="url"
+              formControlName="virtualLink"
+              placeholder="https://zoom.us/..."
+              class="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none"
+              [class.border-red-500]="virtualLink?.invalid && virtualLink?.touched"
+            />
+          </div>
+          <div *ngIf="virtualLink?.invalid && virtualLink?.touched" class="text-xs text-red-500 mt-1">Valid URL is required for virtual/hybrid events.</div>
+        </div>
+
+        <!-- Dates and Times -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Start Date & Time *</label>
+            <div class="relative">
+              <fa-icon [icon]="faCalendarAlt" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+              <input
+                type="datetime-local"
+                formControlName="startDateTime"
+                class="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none"
+                [class.border-red-500]="startDateTime?.invalid && startDateTime?.touched"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">End Date & Time (optional)</label>
+            <div class="relative">
+              <fa-icon [icon]="faClock" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+              <input
+                type="datetime-local"
+                formControlName="endDateTime"
+                class="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Registration Deadline (optional)</label>
+            <input
+              type="datetime-local"
+              formControlName="registrationDeadline"
+              class="w-full px-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Max Attendees (optional)</label>
+            <div class="relative">
+              <fa-icon [icon]="faUsers" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+              <input
+                type="number"
+                formControlName="maxAttendees"
+                placeholder="e.g., 100"
+                class="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Pricing -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Price *</label>
+            <div class="relative">
+              <fa-icon [icon]="faDollarSign" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+              <input
+                type="number"
+                step="0.01"
+                formControlName="price"
+                class="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Currency *</label>
+            <select
+              formControlName="currency"
+              class="w-full px-4 py-3 bg-gray-50 border rounded-xl text-sm focus:bg-white focus:ring-2 outline-none"
+            >
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="JPY">JPY (¥)</option>
+              <option value="CAD">CAD ($)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Event Image Upload -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Event Image (optional)</label>
+          <div class="flex items-center gap-4">
+            <label class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-300 rounded-xl text-sm text-gray-700 hover:bg-gray-200 transition-colors">
+              <fa-icon [icon]="faImage"></fa-icon>
+              Choose Image
+              <input type="file" accept="image/*" (change)="onImageSelected($event)" hidden />
+            </label>
+            <span *ngIf="selectedImage" class="text-sm text-green-600">{{ selectedImage.name }}</span>
+          </div>
+          <div *ngIf="imagePreviewUrl" class="mt-2">
+            <img [src]="imagePreviewUrl" alt="Preview" class="w-40 h-40 object-cover rounded-lg border" />
+            <button type="button" (click)="removeImage()" class="mt-2 text-sm text-red-600 hover:text-red-800">Remove image</button>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="eventForm.invalid || isLoading"
+          class="w-full mt-6 py-3 rounded-xl font-medium text-sm transition-all flex items-center justify-center gap-2 group"
+          [class.bg-gradient-to-r]="!eventForm.invalid"
+          [class.from-blue-500]="!eventForm.invalid"
+          [class.to-cyan-500]="!eventForm.invalid"
+          [class.text-white]="!eventForm.invalid"
+          [class.shadow-lg]="!eventForm.invalid"
+          [class.hover:shadow-xl]="!eventForm.invalid"
+          [class.bg-gray-100]="eventForm.invalid"
+          [class.text-gray-400]="eventForm.invalid"
+          [class.cursor-not-allowed]="eventForm.invalid"
+        >
+          <fa-icon [icon]="faSave" class="w-4 h-4"></fa-icon>
+          <span>{{ isLoading ? 'Creating event...' : 'Create Event' }}</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

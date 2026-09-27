@@ -1,0 +1,122 @@
+<div class="min-h-screen py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Research Papers</h1>
+      <p class="text-gray-500 mt-1">Browse and discover the latest research</p>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+      <div class="flex flex-col sm:flex-row gap-4">
+        <div class="relative flex-1">
+          <fa-icon [icon]="faSearch" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></fa-icon>
+          <input
+            type="text"
+            placeholder="Search by title, abstract, or keywords..."
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+          />
+        </div>
+        <div class="sm:w-64">
+          <select
+            [(ngModel)]="selectedCategory"
+            (ngModelChange)="onCategoryChange()"
+            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+          >
+            <option value="all">All Categories</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+      <div class="animate-pulse text-gray-500">Loading research papers...</div>
+    </div>
+
+    <!-- Papers Grid -->
+    <div *ngIf="!isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <!-- Paper Card -->
+      <div *ngFor="let paper of filteredPapers" 
+           class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer"
+           (click)="viewPaper(paper.id)">
+        
+        <!-- Gradient Accent -->
+        <div class="h-2 bg-gradient-to-r from-cyan-500 to-blue-500"></div>
+        
+        <!-- Thumbnail (if exists) -->
+        <div *ngIf="paper.thumbnailUrl" class="h-40 overflow-hidden">
+          <img [src]="paper.thumbnailUrl" [alt]="paper.title" class="w-full h-full object-cover transition-transform hover:scale-105 duration-300" />
+        </div>
+        
+        <div class="p-5">
+          <!-- Title & Category -->
+          <div class="flex justify-between items-start gap-2 mb-2">
+            <h2 class="text-lg font-semibold text-gray-900 hover:text-cyan-600 transition-colors line-clamp-2">
+              {{ paper.title }}
+            </h2>
+            <span class="text-xs text-white bg-cyan-500 px-2 py-0.5 rounded-full whitespace-nowrap">
+              {{ paper.category }}
+            </span>
+          </div>
+          
+          <!-- Abstract preview -->
+          <p class="text-gray-600 text-sm mb-3 line-clamp-3">{{ paper.abstractText }}</p>
+          
+          <!-- Keywords -->
+          <div class="flex flex-wrap gap-1 mb-3">
+            <span *ngFor="let kw of paper.keywords | slice:0:3" 
+                  class="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+              {{ kw }}
+            </span>
+            <span *ngIf="paper.keywords.length > 3" class="text-xs text-gray-400">
+              +{{ paper.keywords.length - 3 }}
+            </span>
+          </div>
+          
+          <!-- Author & File info -->
+          <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+            <span class="flex items-center gap-1">
+              <fa-icon [icon]="faUser" class="w-3 h-3"></fa-icon>
+              {{ getAuthorCount(paper.authorIds?.length || 0) }}
+            </span>
+          </div>
+          
+          <!-- Metrics Row -->
+          <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+            <div class="flex gap-3">
+              <div class="flex items-center gap-1 text-xs text-gray-500">
+                <fa-icon [icon]="faQuoteRight" class="w-3 h-3"></fa-icon>
+                <span>{{ paper.citations }}</span>
+              </div>
+              <div class="flex items-center gap-1 text-xs text-gray-500">
+                <fa-icon [icon]="faThumbsUp" class="w-3 h-3"></fa-icon>
+                <span>{{ paper.likesCount }}</span>
+              </div>
+              <div class="flex items-center gap-1 text-xs text-gray-500">
+                <fa-icon [icon]="faComment" class="w-3 h-3"></fa-icon>
+                <span>{{ paper.commentCount }}</span>
+              </div>
+              <div class="flex items-center gap-1 text-xs text-gray-500">
+                <fa-icon [icon]="faDownload" class="w-3 h-3"></fa-icon>
+                <span>{{ paper.downloadsCount }}</span>
+              </div>
+            </div>
+            <fa-icon [icon]="faBookOpen" class="text-cyan-500 w-4 h-4"></fa-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="filteredPapers.length === 0" class="col-span-full text-center py-12">
+        <fa-icon [icon]="faFileAlt" class="text-gray-300 w-16 h-16 mx-auto mb-4"></fa-icon>
+        <p class="text-gray-500">No research papers found. Try adjusting your search or filters.</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,372 @@
+<main class="bg-white overflow-x-hidden">
+
+  <div
+    class="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200 flex items-center justify-between h-16 px-4 transition-transform duration-500"
+    [class.translate-y-0]="isVisible"
+    [class.-translate-y-full]="!isVisible"
+  >
+    <img src="/assets/Google_Scholar_logo.png" alt="Google Scholar logo" width="250" height="250"
+      class="hover:scale-105 transition-transform duration-300" />
+    <ul class="flex items-center justify-between gap-4">
+      <li>
+        <a routerLink="sign-up"
+          class="text-cyan-800 border border-cyan-800 font-medium text-sm px-4 py-2.5 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300 inline-block">
+          sign up
+        </a>
+      </li>
+      <li>
+        <a routerLink="sign-in"
+          class="text-white bg-gradient-to-r from-cyan-500 to-blue-500 font-medium text-sm px-4 py-2.5 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300 inline-block">
+          sign in
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="relative min-h-screen pt-16 overflow-hidden">
+
+    <ng-container *ngIf="eventData && eventData.length > 0; else defaultHero">
+      <div class="relative w-full min-h-screen">
+        <div class="relative w-full h-screen">
+
+          <div
+            *ngFor="let event of eventData; let i = index"
+            class="absolute inset-0 transition-opacity duration-1000"
+            [class.opacity-100]="i === currentSlide"
+            [class.opacity-0]="i !== currentSlide"
+            [class.z-10]="i === currentSlide"
+          >
+            <img [src]="event.imageUrl" [alt]="event.title" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-12 text-white z-20">
+              <div class="max-w-3xl">
+                <span class="inline-block px-3 py-1 bg-cyan-500 text-white text-xs font-medium rounded-full mb-4 uppercase tracking-wider">
+                  {{ event.eventType | titlecase }} · {{ event.eventFormat | titlecase }}
+                </span>
+                <h2 class="text-4xl font-bold mb-3 leading-tight">{{ event.title }}</h2>
+                <p class="text-white/80 text-lg mb-4 line-clamp-2">{{ event.description }}</p>
+                <div class="flex items-center gap-6 text-sm text-white/70 mb-6">
+                  <span *ngIf="event.location">📍 {{ event.location }}</span>
+                  <span>📅 {{ event.startDateTime | date:'mediumDate' }}</span>
+                  <span *ngIf="event.price === 0" class="text-green-400 font-medium">Free</span>
+                  <span *ngIf="event.price && event.price > 0">{{ event.price }} {{ event.currency }}</span>
+                </div>
+                <div class="flex gap-3">
+                  <a routerLink="/sign-up"
+                    class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-medium rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300 inline-block">
+                    Get Started
+                  </a>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button *ngIf="eventData.length > 1" type="button" (click)="prevSlide()"
+            class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110 focus:outline-none text-2xl">
+            &#8249;
+          </button>
+
+          <button *ngIf="eventData.length > 1" type="button" (click)="nextSlide()"
+            class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110 focus:outline-none text-2xl">
+            &#8250;
+          </button>
+
+          <div *ngIf="eventData.length > 1"
+            class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+            <button
+              *ngFor="let event of eventData; let i = index"
+              type="button"
+              (click)="goToSlide(i)"
+              [attr.aria-label]="'Go to slide ' + (i + 1)"
+              [ngClass]="{
+                'bg-white scale-125': i === currentSlide,
+                'bg-white/40': i !== currentSlide
+              }"
+              class="w-2.5 h-2.5 rounded-full transition-all duration-300 focus:outline-none">
+            </button>
+          </div>
+
+          <div class="absolute bottom-6 right-6 z-20 text-white/50 text-xs flex flex-col items-center gap-1 animate-bounce">
+            <span>scroll</span>
+            <span>&#8595;</span>
+          </div>
+
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #defaultHero>
+      <div class="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-40 pt-20 pb-20 min-h-screen px-4">
+        <div
+          class="text-center transition-all duration-1000 max-w-xl"
+          [class.translate-x-0]="isVisible"
+          [class.opacity-100]="isVisible"
+          [class.-translate-x-full]="!isVisible"
+          [class.opacity-0]="!isVisible"
+        >
+          <h1 class="text-4xl font-bold mb-4 text-cyan-800 animate-pulse">Welcome to Google Scholar</h1>
+          <p class="text-lg text-gray-600 mb-8">Your one-stop solution for managing and sharing research papers.</p>
+          <button type="button"
+            class="text-white bg-gradient-to-r from-cyan-500 to-blue-500 font-medium text-sm px-6 py-3 rounded-lg hover:scale-110 hover:shadow-xl transition-all duration-300">
+            Get Started
+          </button>
+        </div>
+        <div
+          class="transition-all duration-1000 delay-300"
+          [class.translate-x-0]="isVisible"
+          [class.opacity-100]="isVisible"
+          [class.translate-x-full]="!isVisible"
+          [class.opacity-0]="!isVisible"
+        >
+          <img src="/assets/document-search.png" alt="Document search" width="500" class="rounded-lg" />
+        </div>
+      </div>
+    </ng-template>
+
+  </div>
+
+  <div class="bg-white py-20">
+    <h2
+      class="text-4xl text-cyan-800 text-center font-bold mb-16 transition-all duration-1000"
+      [class.translate-y-0]="isVisible"
+      [class.opacity-100]="isVisible"
+      [class.translate-y-20]="!isVisible"
+      [class.opacity-0]="!isVisible"
+    >
+      Join Our Large Community of Researchers
+    </h2>
+    <div class="flex items-center justify-center gap-10 flex-wrap px-4">
+      <div class="bg-white rounded-lg shadow-lg p-6 w-80 text-center hover:shadow-xl transition-all">
+        <fa-icon [icon]="faArrowTrendUp" class="text-4xl text-cyan-600 mb-4"></fa-icon>
+        <h3 class="text-xl font-bold mb-2">Track your impact</h3>
+        <p class="text-gray-600">Share your work with other academics, grow your audience and track your impact on your field with our robust analytics.</p>
+      </div>
+      <div class="bg-white rounded-lg shadow-lg p-6 w-80 text-center hover:shadow-xl transition-all">
+        <fa-icon [icon]="faBook" class="text-4xl text-cyan-600 mb-4"></fa-icon>
+        <h3 class="text-xl font-bold mb-2">Discover new research</h3>
+        <p class="text-gray-600">Get access to millions of research papers and stay informed with the important topics around the world.</p>
+      </div>
+      <div class="bg-white rounded-lg shadow-lg p-6 w-80 text-center hover:shadow-xl transition-all">
+        <fa-icon [icon]="faUpload" class="text-4xl text-cyan-600 mb-4"></fa-icon>
+        <h3 class="text-xl font-bold mb-2">Publish your research</h3>
+        <p class="text-gray-600">Publish your work with fast and rigorous service through Academia.edu Journals. Get instant worldwide dissemination of your work.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white py-20 overflow-hidden">
+    <h2 class="text-4xl text-cyan-800 text-center font-bold mb-16 px-4">
+      Unlock the most powerful features with Scholar IA
+    </h2>
+
+    <div #feature1 class="flex items-center justify-center gap-10 mt-10 flex-wrap px-4 max-w-6xl mx-auto">
+      <div
+        class="transition-all duration-1000"
+        [class.translate-x-0]="feature1Visible"
+        [class.opacity-100]="feature1Visible"
+        [class.-translate-x-32]="!feature1Visible"
+        [class.opacity-0]="!feature1Visible"
+      >
+        <img src="/assets/feed.png" alt="Personalized feed" width="500" class="rounded-lg hover:shadow-2xl transition-all" />
+      </div>
+      <div
+        class="flex-1 min-w-[300px] max-w-xl transition-all duration-1000 delay-200"
+        [class.translate-x-0]="feature1Visible"
+        [class.opacity-100]="feature1Visible"
+        [class.translate-x-32]="!feature1Visible"
+        [class.opacity-0]="!feature1Visible"
+      >
+        <h3 class="text-2xl text-cyan-800 mb-6 font-bold relative group inline-block">
+          A Feed That Understands Your Mind
+          <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 group-hover:w-full transition-all duration-500"></span>
+        </h3>
+        <p class="text-gray-600 leading-relaxed">Your research interests are unique. Why should your feed be generic? Our AI engine learns your reading habits, citation patterns, and saved papers to curate a personalized feed of the latest preprints and publications...</p>
+      </div>
+    </div>
+
+    <div #feature2 class="flex items-center justify-center gap-10 mt-28 flex-wrap px-4 max-w-6xl mx-auto md:flex-row-reverse">
+      <div
+        class="transition-all duration-1000"
+        [class.translate-x-0]="feature2Visible"
+        [class.opacity-100]="feature2Visible"
+        [class.translate-x-32]="!feature2Visible"
+        [class.opacity-0]="!feature2Visible"
+      >
+        <img src="/assets/chat-interface.png" alt="Chat interface" width="500" class="rounded-lg hover:shadow-2xl transition-all" />
+      </div>
+      <div
+        class="flex-1 min-w-[300px] max-w-xl transition-all duration-1000 delay-200"
+        [class.translate-x-0]="feature2Visible"
+        [class.opacity-100]="feature2Visible"
+        [class.-translate-x-32]="!feature2Visible"
+        [class.opacity-0]="!feature2Visible"
+      >
+        <h3 class="text-2xl text-cyan-800 mb-6 font-bold relative group inline-block">
+          Chat with the Literature
+          <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 group-hover:w-full transition-all duration-500"></span>
+        </h3>
+        <p class="text-gray-600 leading-relaxed">Stop wasting hours filtering by keywords. Use our conversational search engine to find papers based on ideas, not just words...</p>
+      </div>
+    </div>
+
+    <div #feature3 class="flex items-center justify-center gap-10 mt-28 flex-wrap px-4 max-w-6xl mx-auto">
+      <div
+        class="transition-all duration-1000"
+        [class.translate-x-0]="feature3Visible"
+        [class.opacity-100]="feature3Visible"
+        [class.-translate-x-32]="!feature3Visible"
+        [class.opacity-0]="!feature3Visible"
+      >
+        <img src="/assets/audiobook.png" alt="Audiobook" width="500" class="rounded-lg hover:shadow-2xl transition-all" />
+      </div>
+      <div
+        class="flex-1 min-w-[300px] max-w-xl transition-all duration-1000 delay-200"
+        [class.translate-x-0]="feature3Visible"
+        [class.opacity-100]="feature3Visible"
+        [class.translate-x-32]="!feature3Visible"
+        [class.opacity-0]="!feature3Visible"
+      >
+        <h3 class="text-2xl text-cyan-800 mb-6 font-bold relative group inline-block">
+          Research on the Go
+          <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 group-hover:w-full transition-all duration-500"></span>
+        </h3>
+        <p class="text-gray-600 leading-relaxed">Turn dense PDFs into dynamic content. Let our AI generate concise written summaries, then instantly convert them into audio briefings—perfect for your commute.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-gradient-to-br from-cyan-50 to-blue-50 py-20">
+    <h2 class="text-4xl text-cyan-800 text-center font-bold mb-16">What Researchers Say About Us</h2>
+    <div class="flex items-stretch justify-center gap-8 flex-wrap px-4 max-w-7xl mx-auto">
+      <div *ngFor="let t of testimonials"
+        class="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 w-80 transform hover:-translate-y-4">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+            {{ t.name ? t.name.charAt(0) : 'R' }}
+          </div>
+          <div>
+            <h3 class="font-bold text-cyan-800">{{ t.name }}</h3>
+            <p class="text-sm text-gray-500">{{ t.role }}</p>
+          </div>
+        </div>
+        <p class="text-gray-600 mb-4 italic">"{{ t.content }}"</p>
+        <div class="flex gap-1 text-yellow-400">
+          <ng-container *ngFor="let dummy of [].constructor(5); let idx = index">
+            <fa-icon *ngIf="idx < t.rating" [icon]="faStar" class="w-4 h-4"></fa-icon>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white py-20" id="contact">
+    <div class="max-w-6xl mx-auto px-4">
+      <h2 class="text-4xl text-cyan-800 text-center font-bold mb-4">Get in Touch</h2>
+      <p class="text-center text-gray-600 mb-16 max-w-2xl mx-auto">Have questions about Scholar IA? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+      <div class="grid md:grid-cols-2 gap-12">
+
+        <div class="space-y-8">
+          <div class="flex items-start gap-4 group hover:translate-x-2 transition-all duration-300">
+            <div class="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center text-white group-hover:scale-110 transition-all duration-300">
+              <fa-icon [icon]="faEnvelope" class="w-5 h-5"></fa-icon>
+            </div>
+            <div>
+              <h3 class="font-bold text-cyan-800 mb-1">Email Us</h3>
+              <p class="text-gray-600">support&#64;scholaria.com</p>
+              <p class="text-gray-600">info&#64;scholaria.com</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4 group hover:translate-x-2 transition-all duration-300">
+            <div class="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center text-white group-hover:scale-110 transition-all duration-300">
+              <fa-icon [icon]="faPhone" class="w-5 h-5"></fa-icon>
+            </div>
+            <div>
+              <h3 class="font-bold text-cyan-800 mb-1">Call Us</h3>
+              <p class="text-gray-600">+1 (555) 123-4567</p>
+              <p class="text-gray-600">+1 (555) 987-6543</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4 group hover:translate-x-2 transition-all duration-300">
+            <div class="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center text-white group-hover:scale-110 transition-all duration-300">
+              <fa-icon [icon]="faLocationDot" class="w-5 h-5"></fa-icon>
+            </div>
+            <div>
+              <h3 class="font-bold text-cyan-800 mb-1">Visit Us</h3>
+              <p class="text-gray-600">123 Research Avenue</p>
+              <p class="text-gray-600">Silicon Valley, CA 94025</p>
+            </div>
+          </div>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" class="space-y-6">
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Your Name</label>
+            <input type="text" id="name" name="name" [(ngModel)]="formData.name" (input)="onInputChange($event)" required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 transition-all"
+              placeholder="John Doe" />
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+            <input type="email" id="email" name="email" [(ngModel)]="formData.email" (input)="onInputChange($event)" required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 transition-all"
+              placeholder="john@example.com" />
+          </div>
+          <div>
+            <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Your Message</label>
+            <textarea id="message" name="message" [(ngModel)]="formData.message" (input)="onInputChange($event)" required
+              rows="5"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 transition-all resize-none"
+              placeholder="Tell us how we can help you..."></textarea>
+          </div>
+          <button type="submit"
+            class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-medium py-3 px-6 rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300">
+            Send Message
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-gradient-to-r from-cyan-600 to-blue-600 text-white py-12 mt-20">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="grid md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <h4 class="font-bold text-lg mb-4">Scholar IA</h4>
+          <p class="text-sm opacity-90">Empowering researchers worldwide with AI-powered tools.</p>
+        </div>
+        <div>
+          <h4 class="font-bold text-lg mb-4">Quick Links</h4>
+          <ul class="space-y-2 text-sm opacity-90">
+            <li><a routerLink="/about" class="hover:underline">About Us</a></li>
+            <li><a routerLink="/features" class="hover:underline">Features</a></li>
+            <li><a routerLink="/pricing" class="hover:underline">Pricing</a></li>
+            <li><a routerLink="/blog" class="hover:underline">Blog</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-lg mb-4">Support</h4>
+          <ul class="space-y-2 text-sm opacity-90">
+            <li><a routerLink="/help" class="hover:underline">Help Center</a></li>
+            <li><a routerLink="/faq" class="hover:underline">FAQ</a></li>
+            <li><a routerLink="/contact" class="hover:underline">Contact</a></li>
+            <li><a routerLink="/privacy" class="hover:underline">Privacy Policy</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-lg mb-4">Follow Us</h4>
+          <div class="flex gap-4">
+            <a href="#" class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all">📘</a>
+            <a href="#" class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all">🐦</a>
+            <a href="#" class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all">📱</a>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-white/20 pt-8 text-center text-sm opacity-90">
+        © 2026 Scholar IA. All rights reserved. Made with ❤️ for researchers worldwide.
+      </div>
+    </div>
+  </div>
+
+</main>
