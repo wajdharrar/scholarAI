@@ -1,0 +1,49 @@
+server:
+  port: 8080
+  tomcat:
+    max-http-form-post-size: 50MB
+    max-swallow-size: 50MB
+    max-part-count: 50
+spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  application:
+    name: scholarAI
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: jdbc:postgresql://${DB_URL}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+logging:
+  level:
+    org.springframework.web.servlet.handler.HandlerMappingIntrospector: ERROR
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    try-it-out-enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+
+app:
+  security:
+    jwt:
+      access-token-expiration: 86400000
+      refresh-token-expiration: 604800000
+      disposable-emails: "[mailinator.com, guerrillamail.com, guerrillamail.net, guerrillamail.org, guerrillamail.biz, 10minutemail.com, 10minutemail.net, 10minutemail.org, temp-mail.org, temp-mail.net, temp-mail.com, throwaway.email, throwawaymail.com, sharklasers.com, grr.la, mailnator.com, mailcatch.com, mintemail.com, mytrashmail.com, trashmail.com, trashmail.net, trashmail.org, spambox.us, spambox.org, spambox.me, tempinbox.com, tempinbox.net, tempemail.net, tempemail.com, tempemail.org, jetable.com, jetable.org, jetable.net, getairmail.com, airmail.net, airmail.cc, maildrop.cc, maildrop.net, guerrillamail.info, mailmetrash.com, trash2009.com, trashdevil.com, trashmail.ws, trashmail.io, trashmail.me, spam.la, spamavert.com, spambob.net, spambob.org, spambob.com, spambog.com, spambog.de, spambog.net, spambog.ru, spamcannon.net, spamcannon.com, spamcon.org, spamcorptastic.com, spamcowboy.com, spamcowboy.net, spamcowboy.org, spamday.com, spamex.com, spamfree24.com, spamfree24.net, spamfree24.org, spamfree24.de, spamfree24.eu, spamgoes.in, spamgourmet.com, spamgourmet.net, spamgourmet.org, spamherelots.com, spamhereplease.com, spamhole.com, spamify.com, spaminator.de, spamkill.info, spamspot.com, spamstack.net, spamthis.co.uk, spamthisplease.com, spamtrail.com, spamtrap.ro, spamwc.com, spamwc.de, spamwc.net, spamwc.org]"
